@@ -1,0 +1,90 @@
+##########persistent volume
+cephfs - CephFS volume
+csi - Container Storage Interface (CSI)
+fc - Fibre Channel (FC) storage
+hostPath - HostPath volume (for single node testing only; WILL NOT WORK in a multi-node cluster; consider using local volume instead)
+
+iscsi - iSCSI (SCSI over IP) storage
+local - local storage devices mounted on nodes.
+
+
+nfs - Network File System (NFS) storage
+rbd - Rados Block Device (RBD) volume
+
+##################
+A projected volume maps several existing volume sources into the same directory.
+
+Currently, the following types of volume sources can be projected:
+
+secret
+downwardAPI
+configMap
+serviceAccountToken
+All sources are required to be in the same namespace as the Pod. For more details, see the all-in-one volume design document.
+
+Example configuration with a secret, a downwardAPI, and a configMap
+pods/storage/projected-secret-downwardapi-configmap.yaml Copy pods/storage/projected-secret-downwardapi-configmap.yaml to clipboard
+apiVersion: v1
+kind: Pod
+metadata:
+  name: volume-test
+spec:
+  containers:
+  - name: container-test
+    image: busybox:1.28
+    volumeMounts:
+    - name: all-in-one
+      mountPath: "/projected-volume"
+      readOnly: true
+  volumes:
+  - name: all-in-one
+    projected:
+      sources:
+      - secret:
+          name: mysecret
+          items:
+            - key: username
+              path: my-group/my-username
+      - downwardAPI:
+          items:
+            - path: "labels"
+              fieldRef:
+                fieldPath: metadata.labels
+            - path: "cpu_limit"
+              resourceFieldRef:
+                containerName: container-test
+                resource: limits.cpu
+      - configMap:
+          name: myconfigmap
+          items:
+            - key: config
+              path: my-group/my-config
+Example configuration: secrets with a non-default permission mode set
+pods/storage/projected-secrets-nondefault-permission-mode.yaml Copy pods/storage/projected-secrets-nondefault-permission-mode.yaml to clipboard
+apiVersion: v1
+kind: Pod
+metadata:
+  name: volume-test
+spec:
+  containers:
+  - name: container-test
+    image: busybox:1.28
+    volumeMounts:
+    - name: all-in-one
+      mountPath: "/projected-volume"
+      readOnly: true
+  volumes:
+  - name: all-in-one
+    projected:
+      sources:
+      - secret:
+          name: mysecret
+          items:
+            - key: username
+              path: my-group/my-username
+      - secret:
+          name: mysecret2
+          items:
+            - key: password
+              path: my-group/my-password
+              mode: 511
