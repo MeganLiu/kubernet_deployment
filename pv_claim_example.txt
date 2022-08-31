@@ -201,3 +201,8 @@ spec:
   resources:
    requests:
     storage: 10Gi
+    
+    
+    
+    ####dynamic provising volume, storageclass
+    So k8s provides a mechanism for automatic PV creation, which is called Dynamic Provisioning . And StorageClass is the core of Dynamic Provisioning .
