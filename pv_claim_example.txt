@@ -1,1 +1,27 @@
-
+root@controlplane ~ ➜  cat pv-log-claim.yaml 
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: claim-log-1
+spec:
+  volumeName: claim-log-1
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Mi
+      
+   #########pv.yaml   
+oot@controlplane ~ ➜  cat pv-log.yaml 
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-log
+spec:
+  capacity:
+    storage: 100Mi
+  accessModes:
+     - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: /pv/log
