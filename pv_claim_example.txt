@@ -206,3 +206,9 @@ spec:
     
     ####dynamic provising volume, storageclass
     So k8s provides a mechanism for automatic PV creation, which is called Dynamic Provisioning . And StorageClass is the core of Dynamic Provisioning .
+    
+    he purpose of the StorageClass object is actually to create a template for PV. Specifically, the StorageClass the object will define the following two parts: 1. The attributes of PV: For example, storage type, volume size, etc
+
+2. The storage plug-in needed to create this kind of PV: For example, Ceph
+
+With these two pieces of information, k8s can find a corresponding StorageClass based on the PVC submitted by the user. Then, k8s will call the storage plug-in declared by the StorageClass to create the required PV.
